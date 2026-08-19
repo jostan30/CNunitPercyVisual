@@ -96,6 +96,8 @@ accessKey: YOUR_BROWSERSTACK_ACCESS_KEY
 ### Step 5 — Install the BrowserStack SDK (one-time setup)
 
 ```bash
+cd WikipediaPercyTests
+
 dotnet add package BrowserStack.TestAdapter
 dotnet build
 ```
