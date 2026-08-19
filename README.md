@@ -58,7 +58,6 @@ dotnet restore
 ```bash
 dotnet add package BrowserStack.TestAdapter
 dotnet build
-dotnet browserstack-sdk setup
 ```
 
 > This sets up the BrowserStack SDK tool locally. Only needed once per machine.
