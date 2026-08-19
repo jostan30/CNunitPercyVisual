@@ -27,7 +27,7 @@ Make sure you have the following installed before you begin:
 | Node.js + npm | https://nodejs.org (required for Percy CLI) |
 | Git | https://git-scm.com |
 
-> No BrowserStack account setup needed — credentials are already in `browserstack.yml`.
+> You will need a BrowserStack account and a Percy project token to run these tests.
 > Percy CLI is installed automatically by `run-tests.sh` if not already present.
 
 ---
@@ -38,6 +38,7 @@ Make sure you have the following installed before you begin:
 
 ```bash
 git clone <your-github-repo-url>
+cd CNunitPercyVisual
 cd WikipediaPercyTests
 ```
 
@@ -53,56 +54,73 @@ dotnet restore
 
 ---
 
-### Step 3 — Install the BrowserStack SDK (one-time setup)
+### Step 3 — Upload your app to BrowserStack
+
+> ⚠️ Run this command from the directory where your APK file is located (e.g. the `YPU` folder that contains `WikipediaSample.apk`). Using the wrong filename or running from a different directory will cause a `curl: (26) Failed to open/read local data` error.
+
+```bash
+# Navigate to the folder containing your APK first
+cd /path/to/YPU
+
+curl -u "YOUR_BROWSERSTACK_USERNAME:YOUR_BROWSERSTACK_ACCESS_KEY" \
+  -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+  -F "file=@WikipediaSample.apk"
+```
+
+You will get a response like:
+```json
+{ "app_url": "bs://abc123def456..." }
+```
+
+Copy the `app_url` value and update the `app:` field in `browserstack.yml`:
+
+```yaml
+app: bs://abc123def456...
+```
+
+---
+
+### Step 4 — Add your BrowserStack credentials to browserstack.yml
+
+Open `browserstack.yml` and replace the placeholder values with your own BrowserStack username and access key:
+
+```yaml
+userName: YOUR_BROWSERSTACK_USERNAME
+accessKey: YOUR_BROWSERSTACK_ACCESS_KEY
+```
+
+> Get your credentials from: https://www.browserstack.com/accounts/settings
+
+---
+
+### Step 5 — Install the BrowserStack SDK (one-time setup)
 
 ```bash
 dotnet add package BrowserStack.TestAdapter
 dotnet build
 ```
 
-> This sets up the BrowserStack SDK tool locally. Only needed once per machine.
+> Only needed once per machine. This also installs the Percy CLI to `~/.browserstack/percy`.
 
 ---
 
-### Step 4 — Build the project
+### Step 6 — Add your Percy token to run-tests.sh, then execute
+
+Open `run-tests.sh` and set your Percy token on this line:
 
 ```bash
-dotnet build
+PERCY_TOKEN_VALUE="app_YOUR_PERCY_TOKEN_HERE"
 ```
 
-Expected output:
-```
-Build succeeded.
-0 Error(s)
-```
+> Get your Percy token from: **percy.browserstack.com → your project → Settings**
 
----
-
-### Step 5 — Set the App Percy token
-
-```bash
-export PERCY_TOKEN=app_13815b667557cc....
-```
-
-> This token is tied to the Percy project for this repo. Keep it set in your shell session before running tests.
-
----
-
-### Step 6 — Run the tests with Percy
-
-A convenience script is included that sets the Percy token and wraps `dotnet test` with `percy exec` automatically:
+Save the file, then run:
 
 ```bash
 ./run-tests.sh
 ```
 
-This is equivalent to:
-```bash
-export PERCY_TOKEN=app_13815b667557cc482516a282966de770d5b5cad7b9639b99e44015046bb5c2d8
-~/.browserstack/percy exec -- dotnet test
-```
-
-> ⚠️ Running `dotnet test` alone will pass functional tests but Percy will **not** be initiated and no visual snapshots will be captured. Always use `./run-tests.sh` or the `percy exec` command above.
+> ⚠️ Running `dotnet test` alone will pass functional tests but Percy will **not** be initiated and no visual snapshots will be captured. Always use `./run-tests.sh`.
 
 ---
 
