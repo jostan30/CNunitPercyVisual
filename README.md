@@ -37,7 +37,7 @@ Make sure you have the following installed before you begin:
 ### Step 1 — Clone the repository
 
 ```bash
-git clone <your-github-repo-url>
+git clone git@github.com:jostan30/CNunitPercyVisual.git
 cd CNunitPercyVisual
 cd WikipediaPercyTests
 ```
