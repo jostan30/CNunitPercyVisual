@@ -47,6 +47,8 @@ public class WikipediaTests
     {
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
 
+        // Wait for home screen to fully load before capturing
+        wait.Until(d => d.FindElement(By.Id("org.wikipedia.alpha:id/search_container")).Displayed);
         percy.Screenshot("Wikipedia Home Screen");
 
         // search_container confirmed via click in session
@@ -58,7 +60,8 @@ public class WikipediaTests
 
         // Wait for results to load — page_list_item_container confirmed via click in session
         wait.Until(d => d.FindElements(By.Id("org.wikipedia.alpha:id/page_list_item_container")).Count > 0);
-
+        // Wait for first title to be visible before capturing results screenshot
+        wait.Until(d => d.FindElement(By.Id("org.wikipedia.alpha:id/page_list_item_title")).Displayed);
         percy.Screenshot("Search Results List");
 
         var results = driver.FindElements(By.Id("org.wikipedia.alpha:id/page_list_item_container"));
@@ -79,9 +82,9 @@ public class WikipediaTests
     {
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
 
-        // search_container confirmed via click action in session
+        // Wait for search_container to be fully visible before capturing
         var searchContainer = wait.Until(d => d.FindElement(By.Id("org.wikipedia.alpha:id/search_container")));
-
+        wait.Until(d => d.FindElement(By.Id("org.wikipedia.alpha:id/search_container")).Displayed);
         percy.Screenshot("Explore Feed");
 
         Assert.That(searchContainer.Displayed, Is.True,
@@ -97,11 +100,15 @@ public class WikipediaTests
     {
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
 
+        // Wait for home screen to be ready before capturing
+        wait.Until(d => d.FindElement(By.Id("org.wikipedia.alpha:id/menu_overflow_button")).Displayed);
         percy.Screenshot("Home Before Overflow Menu");
 
         // menu_overflow_button confirmed via click in session
         wait.Until(d => d.FindElement(By.Id("org.wikipedia.alpha:id/menu_overflow_button"))).Click();
 
+        // Wait for Settings item to appear before capturing overflow menu
+        wait.Until(d => d.FindElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Settings\")")).Displayed);
         percy.Screenshot("Overflow Menu Open");
 
         // "Settings" text confirmed via click action in session
@@ -124,6 +131,8 @@ public class WikipediaTests
         // "My lists" content-desc confirmed via click action in session
         wait.Until(d => d.FindElement(MobileBy.AccessibilityId("My lists"))).Click();
 
+        // Wait for My Lists tab content to load before capturing
+        wait.Until(d => d.FindElement(MobileBy.AccessibilityId("My lists")).Displayed);
         percy.Screenshot("My Lists Tab");
 
         var myListsTab = wait.Until(d => d.FindElement(MobileBy.AccessibilityId("My lists")));
