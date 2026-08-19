@@ -60,7 +60,7 @@ dotnet restore
 
 ```bash
 # Navigate to the folder containing your APK first
-cd /path/to/YPU
+cd ../
 
 curl -u "YOUR_BROWSERSTACK_USERNAME:YOUR_BROWSERSTACK_ACCESS_KEY" \
   -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
